@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LandRisk Hero Experience</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#b08969",
+              "background-light": "#f7f7f6",
+              "background-dark": "#111111", /* Adjusted to match user request better than default config, but keeping config var name */
+              "surface-dark": "#1a1a1a",
+              "off-white": "#F5F5F2",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"],
+              "serif": ["Playfair Display", "serif"],
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            animation: {
+              'float': 'float 8s ease-in-out infinite',
+              'dash': 'dash 20s linear infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
+              },
+              dash: {
+                '0%': { strokeDashoffset: '1000' },
+                '100%': { strokeDashoffset: '0' },
+              }
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444;
+        }
+
+        /* Subtle topo pattern animation */
+        .topo-lines path {
+            stroke-dasharray: 10;
+            animation: dash 60s linear infinite;
+            opacity: 0.15;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-off-white font-display overflow-x-hidden min-h-screen flex flex-col">
+<!-- Topographic Background Layer -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<svg class="absolute w-[150%] h-[150%] -top-[20%] -left-[20%] topo-lines stroke-primary fill-none" xmlns="http://www.w3.org/2000/svg">
+<!-- Abstract topographic lines -->
+<path d="M0,200 Q200,100 400,200 T800,200 T1200,200 T1600,200" stroke-width="1"></path>
+<path d="M0,250 Q200,150 400,250 T800,250 T1200,250 T1600,250" stroke-width="1"></path>
+<path d="M0,300 Q200,200 400,300 T800,300 T1200,300 T1600,300" stroke-width="1"></path>
+<path d="M0,350 Q200,250 400,350 T800,350 T1200,350 T1600,350" stroke-width="1"></path>
+<path d="M0,400 Q200,300 400,400 T800,400 T1200,400 T1600,400" stroke-width="1"></path>
+<path d="M0,600 Q300,500 600,600 T1200,600 T1800,600" stroke-width="1"></path>
+<path d="M0,650 Q300,550 600,650 T1200,650 T1800,650" stroke-width="1"></path>
+<path d="M0,700 Q300,600 600,700 T1200,700 T1800,700" stroke-width="1"></path>
+<circle cx="800" cy="400" opacity="0.1" r="300" stroke-width="0.5"></circle>
+<circle cx="800" cy="400" opacity="0.1" r="250" stroke-width="0.5"></circle>
+<circle cx="800" cy="400" opacity="0.1" r="200" stroke-width="0.5"></circle>
+</svg>
+<!-- Vignette to focus center -->
+<div class="absolute inset-0 bg-radial-gradient from-transparent via-background-dark/50 to-background-dark"></div>
+</div>
+<!-- Navigation -->
+<header class="relative z-50 w-full px-6 py-6 lg:px-12 border-b border-white/5 backdrop-blur-sm bg-background-dark/30">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary/20 border border-primary/50 flex items-center justify-center rounded-lg">
+<svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<span class="font-display font-bold text-xl tracking-tight text-white">LandRisk</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium text-gray-400 hover:text-primary transition-colors" href="#">Methodology</a>
+<a class="text-sm font-medium text-gray-400 hover:text-primary transition-colors" href="#">Assessment</a>
+<a class="text-sm font-medium text-gray-400 hover:text-primary transition-colors" href="#">Pricing</a>
+</nav>
+<div class="flex items-center gap-4">
+<a class="hidden md:block text-sm font-medium text-white hover:text-primary transition-colors" href="#">Sign In</a>
+<a class="md:hidden text-white" href="#">
+<svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</a>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="relative z-10 flex-grow flex items-center">
+<div class="max-w-7xl mx-auto px-6 lg:px-12 w-full grid lg:grid-cols-2 gap-16 lg:gap-8 items-center py-12 lg:py-0">
+<!-- Left Column: Copy -->
+<div class="flex flex-col justify-center space-y-8 max-w-2xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 w-fit">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-xs font-semibold tracking-wide uppercase text-primary">Spatial Intelligence V2.0</span>
+</div>
+<h1 class="text-5xl lg:text-7xl font-serif font-medium leading-[1.1] tracking-tight text-off-white">
+                    Land Risk. <br/>
+<span class="text-gray-400">Evaluated Before</span> <br/>
+                    Capital Moves.
+                </h1>
+<p class="text-lg lg:text-xl text-off-white/80 font-light leading-relaxed max-w-lg border-l-2 border-primary/30 pl-6">
+                    A structured spatial intelligence layer for early-stage land feasibility decisions. Quantify uncertainty with architectural precision.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4 pt-4">
+<button class="px-8 py-4 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(176,137,105,0.2)] flex items-center justify-center gap-2 group">
+                        Run Site Evaluation
+                        <svg class="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<button class="px-8 py-4 bg-transparent border border-primary/40 text-primary hover:bg-primary/5 hover:border-primary transition-all font-medium rounded-lg flex items-center justify-center">
+                        Explore Methodology
+                    </button>
+</div>
+<div class="flex items-center gap-8 pt-8 border-t border-white/5">
+<div>
+<p class="text-2xl font-display font-bold text-white">4.2M+</p>
+<p class="text-xs text-gray-500 uppercase tracking-wider">Parcels Indexed</p>
+</div>
+<div>
+<p class="text-2xl font-display font-bold text-white">99.8%</p>
+<p class="text-xs text-gray-500 uppercase tracking-wider">Data Accuracy</p>
+</div>
+<div>
+<div class="flex -space-x-2 overflow-hidden">
+<img alt="Architect" class="inline-block h-8 w-8 rounded-full ring-2 ring-background-dark grayscale opacity-70 hover:opacity-100 transition-opacity" data-alt="Small avatar of an architect user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqa4oLK9PUrk_T8PMC0tzZAImiDiXd5LEgPSqQSJKKiD0woQKcvFSDVf_1NEzYtzvqmXAlA-1k1yT6Lq0jJcaRdwPsDwYoqKIV80T16J9shzikToglxJnpcV0rLDD3GPskjgr1YWrwVOLJJdf084H38XKMUs2DLajkyxDUMBDGatKSI-GJAKrPTT1AzUFp0oBwwwO6XeyzzarP5VEB9lTe5xZe8Uyn2rSH9YBlz9J1zFEwUO87P1Om6ZyIOXxtvMPgprOUHqyvgPg"/>
+<img alt="Engineer" class="inline-block h-8 w-8 rounded-full ring-2 ring-background-dark grayscale opacity-70 hover:opacity-100 transition-opacity" data-alt="Small avatar of an engineer user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDttxixpbPmbP9al0AlDf-vLJdQkj07hDtcV055dQ1leyXyxlwv5C2VrMLZ36q5Mh53_qZZvBljwIMGUs_NwIU8PflyBMhJb2EPS1odjrSH3smqaaqfKlkVceonvNoC-GiJGj9zjAiV3g8ZKWcP-A3RbgJ4x4mwZiaawz1Hn7ZPJefFHADUD4_q2Zw99lcRt1-b4EHLzbA8z9x8glyE6TgaiiTK_fhg5DWL4Va_MBXhsKABIXnsEcFBZT3r-0guuJhnFwiNeP6hruM"/>
+<img alt="Developer" class="inline-block h-8 w-8 rounded-full ring-2 ring-background-dark grayscale opacity-70 hover:opacity-100 transition-opacity" data-alt="Small avatar of a developer user" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjWG-kARPhzgWGOhL2eGPalzYNAIWnCpetb93oaakrw2sZF91hb-P8_sSCCtoi4_wTUh2u0j2CkzzfgmGN9BCSw-60Dt__cKGjuwHX6r6OMe-bOKSASqv6dqZqd80AWTEYn1k62_Dgl7cjiS4NSASba6cWI-z2dXEapAOusJHkfL-eo7SVZi4pAg1QU1Bl5DfDSBM9kvDL1opDnuwA72SsbnH6jgrNTBX9CZ-lmqy6qs7IGg6_l71jMUgopg2Dz6KThdCo2xLhudM"/>
+</div>
+<p class="text-xs text-gray-500 uppercase tracking-wider mt-1">Trusted by leaders</p>
+</div>
+</div>
+</div>
+<!-- Right Column: UI Mockup -->
+<div class="relative lg:h-full flex items-center justify-center lg:justify-end">
+<!-- Floating Card Container -->
+<div class="relative w-full max-w-md animate-float perspective-1000">
+<!-- Decorative back layer -->
+<div class="absolute inset-0 bg-primary/5 rounded-xl transform translate-x-4 translate-y-4 blur-sm -z-10"></div>
+<!-- Main UI Card -->
+<div class="bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl overflow-hidden backdrop-blur-xl bg-opacity-95">
+<!-- Card Header -->
+<div class="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-white/5">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-red-500"></div>
+<div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+</div>
+<span class="text-xs font-mono text-gray-500">REF: Parcel-8291-X</span>
+</div>
+<!-- Card Body -->
+<div class="p-6 space-y-6">
+<!-- Score Section -->
+<div class="flex items-center justify-between">
+<div>
+<h3 class="text-sm uppercase tracking-widest text-gray-400 mb-1">Feasibility Score</h3>
+<div class="flex items-baseline gap-1">
+<span class="text-4xl font-bold text-white">72</span>
+<span class="text-sm text-gray-500">/100</span>
+</div>
+<span class="text-xs text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20 mt-2 inline-block">Moderate Risk</span>
+</div>
+<div class="w-16 h-16 relative flex items-center justify-center">
+<svg class="transform -rotate-90 w-16 h-16">
+<circle class="text-gray-800" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-width="4"></circle>
+<circle class="text-primary" cx="32" cy="32" fill="transparent" r="28" stroke="currentColor" stroke-dasharray="175.9" stroke-dashoffset="49" stroke-width="4"></circle>
+</svg>
+</div>
+</div>
+<!-- Map Snippet -->
+<div class="h-32 w-full rounded-lg bg-gray-800 relative overflow-hidden border border-white/5 group">
+<div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&amp;w=2074&amp;auto=format&amp;fit=crop')] bg-cover bg-center grayscale opacity-40 mix-blend-overlay" data-alt="Satellite imagery of a land plot with subtle overlay" data-location="Denver" style=""></div>
+<div class="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] to-transparent"></div>
+<!-- Map UI Overlays -->
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur px-2 py-1 rounded text-[10px] text-white font-mono border border-white/10">
+                                    LAT: 39.7392° N
+                                </div>
+<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+<div class="w-20 h-20 border border-primary/50 rounded-full flex items-center justify-center bg-primary/5 animate-pulse">
+<div class="w-1 h-1 bg-primary rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Metrics Grid -->
+<div class="grid grid-cols-2 gap-4">
+<div class="p-3 bg-white/5 rounded border border-white/5">
+<div class="flex items-center gap-2 mb-2">
+<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="text-xs text-gray-400 uppercase">Zoning</span>
+</div>
+<p class="text-sm font-semibold text-white">Mixed-Use</p>
+</div>
+<div class="p-3 bg-white/5 rounded border border-white/5">
+<div class="flex items-center gap-2 mb-2">
+<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="text-xs text-gray-400 uppercase">Flood Zone</span>
+</div>
+<p class="text-sm font-semibold text-white">Zone X (Low)</p>
+</div>
+</div>
+<!-- Progress Bars -->
+<div class="space-y-3 pt-2">
+<div>
+<div class="flex justify-between text-xs mb-1">
+<span class="text-gray-400">Soil Stability</span>
+<span class="text-primary font-mono">88%</span>
+</div>
+<div class="h-1 w-full bg-gray-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[88%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs mb-1">
+<span class="text-gray-400">Topography Index</span>
+<span class="text-gray-300 font-mono">64%</span>
+</div>
+<div class="h-1 w-full bg-gray-800 rounded-full overflow-hidden">
+<div class="h-full bg-gray-600 w-[64%]"></div>
+</div>
+</div>
+</div>
+<!-- Bottom Action -->
+<button class="w-full py-3 bg-white/5 hover:bg-white/10 text-xs uppercase tracking-widest text-gray-300 border border-white/10 rounded transition-colors">
+                                View Full Report
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Stripe -->
+<footer class="relative z-10 border-t border-white/5 bg-background-dark py-6">
+<div class="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500">
+<p>© 2023 LandRisk Intelligence. All rights reserved.</p>
+<div class="flex gap-6 mt-4 md:mt-0">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary transition-colors" href="#">Data Sources</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Parcel {
+  id                   String   @id @default(uuid())
+  location_name        String
+  latitude             Float
+  longitude            Float
+  land_area            Float
+  zoning_category      String
+
+  soil_index           Float
+  flood_index          Float
+  environmental_index  Float
+  zoning_index         Float
+  topography_index     Float
+
+  data_completeness    Float
+  model_consistency    Float
+  data_recency         Float
+
+  last_updated         DateTime
+  data_source_label    String
+
+  created_at           DateTime @default(now())
+}
