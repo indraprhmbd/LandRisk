@@ -3,6 +3,9 @@ import prisma from "@/lib/db";
 import { calculateRisk } from "@/services/business/risk";
 import { calculateConfidence } from "@/services/business/confidence";
 
+// Revalidate cache every hour
+export const revalidate = 3600;
+
 export async function GET() {
   try {
     const parcels = await prisma.parcel.findMany({

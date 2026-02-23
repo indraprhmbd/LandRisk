@@ -6,6 +6,19 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id           String   @id @default(uuid())
+  kindeId      String   @unique
+  email        String   @unique
+  name         String?
+  givenName    String?
+  familyName   String?
+  picture      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  parcels      Parcel[]
+}
+
 model Parcel {
   id                   String   @id @default(uuid())
   location_name        String
@@ -27,5 +40,16 @@ model Parcel {
   last_updated         DateTime
   data_source_label    String
 
+  // Caching & Source Tracking
+  is_offline_mode      Boolean  @default(false)
+  api_cache_timestamp  DateTime @default(now())
+  
+  // User tracking
+  userId               String?
+  user                 User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
   created_at           DateTime @default(now())
+
+  @@index([latitude, longitude])
+  @@index([userId])
 }

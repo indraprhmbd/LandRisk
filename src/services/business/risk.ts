@@ -1,6 +1,8 @@
 // Deterministic Risk Engine — Single Source of Truth
 // Formula: risk_score = (soil × 0.35) + (flood × 0.25) + (env × 0.15) + (zoning × 0.15) + (topo × 0.10)
 
+import { cache, CacheKey, CACHE_TTL } from "@/lib/cache";
+
 export interface FactorBreakdown {
   factor: string;
   raw_value: number;
@@ -47,6 +49,11 @@ export function calculateRisk(parcel: {
   zoning_index: number;
   topography_index: number;
 }): RiskEngineOutput {
+  // Check cache first
+  const cacheKey = CacheKey.risk(parcel);
+  const cached = cache.get<RiskEngineOutput>(cacheKey);
+  if (cached) return cached;
+
   const factorBreakdown: FactorBreakdown[] = Object.entries(WEIGHTS).map(
     ([key, weight]) => {
       const rawValue = parcel[key as keyof typeof parcel];
@@ -69,11 +76,16 @@ export function calculateRisk(parcel: {
     f.weighted_value > max.weighted_value ? f : max,
   );
 
-  return {
+  const result: RiskEngineOutput = {
     risk_score: riskScore,
     classification: classify(riskScore),
     dominant_factor: dominantFactor.factor,
     factor_breakdown: factorBreakdown,
     model_version: MODEL_VERSION,
   };
+
+  // Cache the result
+  cache.set(cacheKey, result, CACHE_TTL.RISK_CALCULATION);
+
+  return result;
 }

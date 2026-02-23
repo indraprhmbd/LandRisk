@@ -4,6 +4,9 @@ import { calculateRisk } from "@/services/business/risk";
 import { calculateConfidence } from "@/services/business/confidence";
 import { getInterpretation } from "@/lib/ai/interpret";
 
+// Revalidate cache every hour
+export const revalidate = 3600;
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },

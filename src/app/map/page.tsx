@@ -1,198 +1,290 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import Link from "next/link";
+import {
+  Spinner,
+  MapPin,
+  Warning,
+  CheckCircle,
+  Lock,
+} from "@phosphor-icons/react";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 // Dynamically import the map component (Leaflet requires window)
 const MapView = dynamic(() => import("@/components/map-viewer"), {
   ssr: false,
   loading: () => (
     <div className="w-full h-full flex items-center justify-center bg-surface-dark rounded-xl">
-      <svg className="animate-spin h-8 w-8 text-primary" viewBox="0 0 24 24">
-        <circle
-          className="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          strokeWidth="4"
-          fill="none"
-        />
-        <path
-          className="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-        />
-      </svg>
+      <Spinner size={32} className="animate-spin text-primary" />
     </div>
   ),
 });
 
-interface ParcelMarker {
-  id: string;
-  location_name: string;
-  latitude: number;
-  longitude: number;
-  risk_score: number;
-  classification: "Low" | "Moderate" | "High";
-  zoning_category: string;
-  confidence_score: number;
+interface SelectedLocation {
+  lat: number;
+  lng: number;
+  address?: string;
 }
 
 export default function MapPage() {
-  const [parcels, setParcels] = useState<ParcelMarker[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<ParcelMarker | null>(null);
+  const router = useRouter();
+  const { isAuthenticated, isLoading } = useKindeBrowserClient();
+  const [selectedLocation, setSelectedLocation] =
+    useState<SelectedLocation | null>(null);
+  const [evaluating, setEvaluating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetch("/api/parcels")
-      .then((r) => r.json())
-      .then((data) => setParcels(data.parcels || []))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  // Default center: Indonesia
+  const defaultCenter: [number, number] = [-2.5489, 118.0149];
+
+  const handleMapClick = (lat: number, lng: number) => {
+    setSelectedLocation({ lat, lng });
+    setError(null);
+  };
+
+  const handleCoordinateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Parse "lat, lng" format
+    const parts = value.split(",").map((s) => parseFloat(s.trim()));
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+      setSelectedLocation({ lat: parts[0], lng: parts[1] });
+      setError(null);
+    }
+  };
+
+  const handleEvaluate = async () => {
+    if (!selectedLocation) return;
+
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+      router.push(
+        `/api/auth/login?post_login_redirect_url=${encodeURIComponent("/map")}`,
+      );
+      return;
+    }
+
+    setEvaluating(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          latitude: selectedLocation.lat,
+          longitude: selectedLocation.lng,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Evaluation failed");
+      }
+
+      // Redirect to dashboard to view results
+      router.push("/dashboard");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to evaluate location",
+      );
+    } finally {
+      setEvaluating(false);
+    }
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 lg:px-12 py-10 space-y-6">
+    <div className="h-screen flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h1 className="text-2xl lg:text-3xl font-serif font-medium text-off-white">
-            Spatial Intelligence Map
-          </h1>
-          <p className="text-sm text-gray-400">
-            {parcels.length} parcels visualized across Indonesia
-          </p>
+      <header className="bg-surface-dark border-b border-surface-border px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-serif font-medium text-off-white">
+              Select Location
+            </h1>
+            <p className="text-sm text-gray-400">
+              Click on the map or enter coordinates to evaluate land risk
+            </p>
+          </div>
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="text-sm text-gray-400 hover:text-primary transition-colors"
+          >
+            ← Back to Dashboard
+          </button>
         </div>
-        <Link
-          href="/dashboard"
-          className="text-sm text-gray-400 hover:text-primary transition-colors"
-        >
-          ← Dashboard
-        </Link>
-      </div>
+      </header>
 
-      {/* Map + Sidebar */}
-      <div className="grid lg:grid-cols-4 gap-6">
-        <div
-          className="lg:col-span-3 glass-card overflow-hidden"
-          style={{ height: "70vh" }}
-        >
-          {loading ? (
-            <div className="w-full h-full flex items-center justify-center">
-              <svg
-                className="animate-spin h-8 w-8 text-primary"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
+      {/* Main Content */}
+      <div className="flex-1 grid lg:grid-cols-4">
+        {/* Map Area */}
+        <div className="lg:col-span-3 relative">
+          <MapView
+            center={defaultCenter}
+            zoom={5}
+            selectedLocation={selectedLocation}
+            onLocationSelect={handleMapClick}
+          />
+
+          {/* Selected Location Badge */}
+          {selectedLocation && (
+            <div className="absolute top-4 left-4 bg-surface-dark border border-surface-border rounded-lg p-4 shadow-xl max-w-sm">
+              <div className="flex items-start gap-3">
+                <MapPin size={20} className="text-primary mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">
+                    Selected Location
+                  </p>
+                  <p className="text-sm font-mono text-white">
+                    {selectedLocation.lat.toFixed(6)},{" "}
+                    {selectedLocation.lng.toFixed(6)}
+                  </p>
+                  <button
+                    onClick={() => setSelectedLocation(null)}
+                    className="text-xs text-gray-500 hover:text-gray-300 mt-2"
+                  >
+                    Clear selection
+                  </button>
+                </div>
+              </div>
             </div>
-          ) : (
-            <MapView
-              parcels={parcels}
-              onSelect={(p: ParcelMarker) => setSelected(p)}
-            />
           )}
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-4">
-          {/* Legend */}
-          <div className="glass-card p-5">
-            <h3 className="text-xs uppercase tracking-widest text-gray-400 mb-4">
-              Risk Legend
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-risk-low" />
-                <span className="text-sm text-gray-300">Low (0–39)</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-risk-moderate" />
-                <span className="text-sm text-gray-300">Moderate (40–69)</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full bg-risk-high" />
-                <span className="text-sm text-gray-300">High (70–100)</span>
+        <div className="bg-surface-dark border-l border-surface-border p-6 flex flex-col">
+          <div className="space-y-6">
+            {/* Instructions */}
+            <div>
+              <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
+                How to Select
+              </h2>
+              <ul className="space-y-2 text-xs text-gray-400">
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-0.5">▸</span>
+                  Click anywhere on the map to select a location
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-0.5">▸</span>
+                  Or enter coordinates manually below
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-primary mt-0.5">▸</span>
+                  Click "Evaluate Location" to get risk assessment
+                </li>
+              </ul>
+            </div>
+
+            {/* Coordinate Input */}
+            <div>
+              <h2 className="text-sm font-semibold text-white uppercase tracking-wider mb-3">
+                Manual Input
+              </h2>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-gray-400 uppercase tracking-wider mb-1 block">
+                    Coordinates (lat, lng)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="-6.2088, 106.8456"
+                    onChange={handleCoordinateInput}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white font-mono focus:outline-none focus:border-primary/50 transition-colors"
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Selected Parcel Detail */}
-          {selected && (
-            <div className="glass-card p-5 space-y-4">
-              <h3 className="text-xs uppercase tracking-widest text-gray-400">
-                Selected Parcel
-              </h3>
-              <div>
-                <p className="text-sm font-semibold text-white mb-1">
-                  {selected.location_name}
-                </p>
-                <p className="text-xs text-gray-500 font-mono">
-                  {selected.latitude.toFixed(3)},{" "}
-                  {selected.longitude.toFixed(3)}
-                </p>
+            {/* Selected Location Info */}
+            {selectedLocation && (
+              <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                <div className="flex items-center gap-2 mb-3">
+                  <CheckCircle size={16} className="text-primary" />
+                  <h2 className="text-sm font-semibold text-white">
+                    Location Selected
+                  </h2>
+                </div>
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Latitude:</span>
+                    <span className="text-white font-mono">
+                      {selectedLocation.lat.toFixed(6)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Longitude:</span>
+                    <span className="text-white font-mono">
+                      {selectedLocation.lng.toFixed(6)}
+                    </span>
+                  </div>
+                </div>
               </div>
+            )}
 
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">Risk Score</span>
-                <span className="text-lg font-bold text-white font-mono">
-                  {selected.risk_score.toFixed(1)}
-                </span>
+            {/* Error Message */}
+            {error && (
+              <div className="p-4 bg-risk-high/10 border border-risk-high/20 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Warning size={16} className="text-risk-high" />
+                  <h2 className="text-sm font-semibold text-risk-high">
+                    Error
+                  </h2>
+                </div>
+                <p className="text-xs text-gray-400">{error}</p>
               </div>
+            )}
 
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">Classification</span>
-                <span
-                  className={`text-xs font-semibold px-2 py-1 rounded ${
-                    selected.classification === "Low"
-                      ? "risk-low"
-                      : selected.classification === "Moderate"
-                        ? "risk-moderate"
-                        : "risk-high"
-                  }`}
+            {/* Evaluate Button */}
+            <button
+              onClick={handleEvaluate}
+              disabled={
+                (!selectedLocation && !!isAuthenticated) ||
+                !!evaluating ||
+                !!isLoading
+              }
+              className="w-full py-4 bg-primary hover:bg-primary-light text-white font-semibold rounded-lg transition-all shadow-[0_0_20px_rgba(176,137,105,0.15)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {evaluating ? (
+                <>
+                  <Spinner size={20} className="animate-spin" />
+                  Evaluating...
+                </>
+              ) : !isAuthenticated ? (
+                <>
+                  <Lock size={20} weight="bold" />
+                  Login to Evaluate
+                </>
+              ) : (
+                <>
+                  Evaluate Location
+                  <MapPin size={20} weight="bold" />
+                </>
+              )}
+            </button>
+            {!isAuthenticated && (
+              <p className="text-xs text-center text-gray-500">
+                You need to{" "}
+                <a
+                  href={`/api/auth/login?post_login_redirect_url=${encodeURIComponent("/map")}`}
+                  className="text-primary hover:underline"
                 >
-                  {selected.classification}
-                </span>
-              </div>
+                  sign in
+                </a>{" "}
+                to evaluate a location.
+              </p>
+            )}
 
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">Confidence</span>
-                <span className="text-xs font-mono text-primary">
-                  {(selected.confidence_score * 100).toFixed(0)}%
-                </span>
-              </div>
-
-              <Link
-                href={`/report/${selected.id}`}
-                className="block w-full py-2.5 bg-primary hover:bg-primary-light text-white text-xs uppercase tracking-widest font-semibold rounded-lg text-center transition-colors"
-              >
-                View Full Report →
-              </Link>
-            </div>
-          )}
-
-          {!selected && (
-            <div className="glass-card p-5 text-center">
-              <p className="text-sm text-gray-500">
-                Click a marker on the map to view parcel details.
+            {/* Info Note */}
+            <div className="p-4 bg-white/5 border border-white/10 rounded-lg">
+              <p className="text-xs text-gray-400 leading-relaxed">
+                <strong className="text-white">Note:</strong> This evaluation
+                uses real-time data from multiple sources (SoilGrids, NASA,
+                USGS). First-time evaluations may take a few seconds.
               </p>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

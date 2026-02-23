@@ -6,10 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@kinde-oss/kinde-auth-nextjs": "^2.11.0",
+    "@neondatabase/serverless": "^1.0.2",
     "@phosphor-icons/react": "^2.1.10",
+    "@prisma/adapter-neon": "^7.4.1",
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
     "@types/pg": "^8.16.0",
