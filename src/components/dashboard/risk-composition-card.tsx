@@ -14,18 +14,18 @@ export default function RiskCompositionCard({
   riskScore,
 }: RiskCompositionCardProps) {
   return (
-    <div className="bg-surface-dark border border-surface-border rounded-lg p-4 shadow-sm relative overflow-hidden">
+    <div className="bg-surface-dark border border-surface-border rounded-lg p-5 shadow-sm relative overflow-hidden">
       {/* Background decorative arcs */}
       <div className="absolute top-2 left-1/2 -translate-x-1/2 w-full pointer-events-none opacity-[0.02]">
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[180px] border border-gray-400 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%] h-[162px] border border-gray-400 rounded-t-full"></div>
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[144px] border border-gray-400 rounded-t-full"></div>
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[200px] border border-gray-400 rounded-t-full"></div>
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[90%] h-[180px] border border-gray-400 rounded-t-full"></div>
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[160px] border border-gray-400 rounded-t-full"></div>
       </div>
 
       {/* Header */}
-      <div className="flex items-center gap-3 mb-2 relative z-10">
+      <div className="flex items-center gap-3 mb-3 relative z-10">
         <div className="w-5 h-5 rounded bg-primary flex items-center justify-center">
-          <div className="w-2.5 h-2.5 border-2 border-surface-dark rounded-full"></div>
+          <span className="material-icons text-xs text-surface-dark">donut_large</span>
         </div>
         <h3 className="text-sm font-bold text-white uppercase tracking-widest">
           Risk Composition
@@ -33,8 +33,8 @@ export default function RiskCompositionCard({
       </div>
 
       {/* Semi-Circle Donut Gauge Chart */}
-      <div className="relative flex-grow flex flex-col items-center justify-center pb-2">
-        <div className="relative w-full mx-auto">
+      <div className="relative flex-grow flex flex-col items-center justify-center">
+        <div className="relative w-full max-w-sm mx-auto">
           <ResponsiveContainer width="100%" height={140}>
             <PieChart>
               <Pie
@@ -43,7 +43,7 @@ export default function RiskCompositionCard({
                 cy="100%"
                 startAngle={180}
                 endAngle={0}
-                innerRadius="75%"
+                innerRadius="70%"
                 outerRadius="100%"
                 paddingAngle={3}
                 dataKey="value"
@@ -73,24 +73,24 @@ export default function RiskCompositionCard({
               />
             </PieChart>
           </ResponsiveContainer>
+        </div>
 
-          {/* Center Score Display */}
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 text-center">
-            <div className="text-3xl font-bold text-white">
-              {riskScore.toFixed(0) || "—"}
-            </div>
-            <div className="text-[9px] text-gray-500 uppercase tracking-widest mt-0.5">
-              Risk Score
-            </div>
+        {/* Center Score Display - Below the arc */}
+        <div className="text-center -mt-8">
+          <div className="text-4xl font-bold text-white">
+            {riskScore.toFixed(0) || "—"}
+          </div>
+          <div className="text-[10px] text-gray-500 uppercase tracking-widest mt-0.5">
+            Risk Score
           </div>
         </div>
 
         {/* Legend - Three Column Layout */}
-        <div className="w-full mt-2 relative z-10">
+        <div className="w-full mt-4 relative z-10">
           {pieChartData.map((item, index) => (
             <div
               key={item.name}
-              className="flex items-center justify-between gap-4 py-1"
+              className="flex items-center justify-between gap-4 py-1.5"
             >
               {/* Left: Color Dot + Name */}
               <div className="flex items-center gap-2.5 w-28">
@@ -104,7 +104,7 @@ export default function RiskCompositionCard({
               </div>
 
               {/* Center: Progress Bar Track */}
-              <div className="flex-1 max-w-[120px] bg-surface-border h-0.5 rounded-full overflow-hidden">
+              <div className="flex-1 max-w-[140px] bg-surface-border h-1 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full"
                   style={{
@@ -115,14 +115,14 @@ export default function RiskCompositionCard({
               </div>
 
               {/* Right: Percentage */}
-              <div className="text-xs font-mono text-white font-medium w-10 text-right">
+              <div className="text-xs font-mono text-white font-medium w-12 text-right">
                 {item.percentage}%
               </div>
             </div>
           ))}
 
           {/* Descriptive Text */}
-          <div className="w-full mt-2 pt-2 border-t border-surface-border">
+          <div className="w-full mt-3 pt-3 border-t border-surface-border">
             <p className="text-[10px] text-gray-500 text-center leading-relaxed">
               Percentage of total risk contribution by each factor
             </p>

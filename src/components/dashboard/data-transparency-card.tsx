@@ -85,7 +85,7 @@ export default function DataTransparencyCard({ metadata }: DataTransparencyCardP
         <div className={`w-5 h-5 rounded flex items-center justify-center ${
           qualityScore >= 0.8 ? 'bg-forest' : qualityScore >= 0.6 ? 'bg-amber' : 'bg-rust'
         }`}>
-          <div className="w-2.5 h-2.5 border-2 border-surface-dark rounded-full"></div>
+          <span className="material-icons text-xs text-surface-dark">data_usage</span>
         </div>
         <h3 className="text-sm font-bold text-white uppercase tracking-widest">
           Data Transparency
@@ -125,7 +125,7 @@ export default function DataTransparencyCard({ metadata }: DataTransparencyCardP
       <div className="mt-3 pt-2 border-t border-surface-border relative z-10">
         <div className="flex items-center justify-between mb-2">
           <span className="text-[10px] text-gray-500">Overall Quality</span>
-          <span className="text-[10px] font-mono text-white">
+          <span className="text-[10px] font-mono text-gray-200">
             {(qualityScore * 100).toFixed(0)}%
           </span>
         </div>

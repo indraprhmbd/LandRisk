@@ -17,6 +17,7 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   parcels      Parcel[]
+  reports      Report[]
 }
 
 model Parcel {
@@ -50,6 +51,49 @@ model Parcel {
 
   created_at           DateTime @default(now())
 
+  reports              Report[]
+
   @@index([latitude, longitude])
   @@index([userId])
+}
+
+model Report {
+  id                   String   @id @default(uuid())
+  
+  // Ownership
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parcelId             String
+  parcel               Parcel   @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  
+  // Risk Assessment Data (snapshot at report generation time)
+  risk_score           Float
+  classification       String
+  dominant_factor      String
+  factor_breakdown     Json
+  
+  // Confidence Data
+  confidence_score     Float
+  completeness_score   Float
+  consistency_score    Float
+  recency_score        Float
+  low_integrity        Boolean
+  
+  // AI Interpretation
+  summary              String
+  key_observations     Json
+  recommended_action   String
+  limitations          String
+  
+  // Metadata
+  location_name        String
+  coordinates          String
+  land_area            Float
+  zoning_category      String
+  data_source          String
+  
+  createdAt            DateTime @default(now())
+  
+  @@index([userId])
+  @@index([parcelId])
 }

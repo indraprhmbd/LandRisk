@@ -14,7 +14,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "LandRisk — Land Feasibility Risk Evaluation",
+  title: "LandRisk",
   description:
     "A structured spatial intelligence layer for early-stage land feasibility decisions. Quantify uncertainty with architectural precision.",
   icons: {

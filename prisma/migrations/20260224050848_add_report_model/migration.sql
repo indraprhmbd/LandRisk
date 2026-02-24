@@ -39,6 +39,34 @@ CREATE TABLE "Parcel" (
     CONSTRAINT "Parcel_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Report" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "parcelId" TEXT NOT NULL,
+    "risk_score" DOUBLE PRECISION NOT NULL,
+    "classification" TEXT NOT NULL,
+    "dominant_factor" TEXT NOT NULL,
+    "factor_breakdown" JSONB NOT NULL,
+    "confidence_score" DOUBLE PRECISION NOT NULL,
+    "completeness_score" DOUBLE PRECISION NOT NULL,
+    "consistency_score" DOUBLE PRECISION NOT NULL,
+    "recency_score" DOUBLE PRECISION NOT NULL,
+    "low_integrity" BOOLEAN NOT NULL,
+    "summary" TEXT NOT NULL,
+    "key_observations" JSONB NOT NULL,
+    "recommended_action" TEXT NOT NULL,
+    "limitations" TEXT NOT NULL,
+    "location_name" TEXT NOT NULL,
+    "coordinates" TEXT NOT NULL,
+    "land_area" DOUBLE PRECISION NOT NULL,
+    "zoning_category" TEXT NOT NULL,
+    "data_source" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Report_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_kindeId_key" ON "User"("kindeId");
 
@@ -51,5 +79,17 @@ CREATE INDEX "Parcel_latitude_longitude_idx" ON "Parcel"("latitude", "longitude"
 -- CreateIndex
 CREATE INDEX "Parcel_userId_idx" ON "Parcel"("userId");
 
+-- CreateIndex
+CREATE INDEX "Report_userId_idx" ON "Report"("userId");
+
+-- CreateIndex
+CREATE INDEX "Report_parcelId_idx" ON "Report"("parcelId");
+
 -- AddForeignKey
 ALTER TABLE "Parcel" ADD CONSTRAINT "Parcel_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Report" ADD CONSTRAINT "Report_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Report" ADD CONSTRAINT "Report_parcelId_fkey" FOREIGN KEY ("parcelId") REFERENCES "Parcel"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -47,7 +47,7 @@ export default function Footer({ variant = "landing" }: FooterProps) {
   return (
     <>
       <footer className="w-full bg-surface-dark-alt border-t border-surface-border-alt relative z-20">
-        <div className="max-w-7xl mx-auto px-6 py-16 md:py-20 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+        <div className="max-w-7xl mx-auto px-6 md:py-20 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
           <div>
             <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">
               Evaluate Before You Commit.

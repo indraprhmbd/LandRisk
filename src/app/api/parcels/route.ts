@@ -2,13 +2,55 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { calculateRisk } from "@/services/business/risk";
 import { calculateConfidence } from "@/services/business/confidence";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 // Revalidate cache every hour
 export const revalidate = 3600;
 
 export async function GET() {
   try {
+    // Get authenticated user
+    const { isAuthenticated, getUser } = getKindeServerSession();
+    const isAuth = await isAuthenticated();
+    
+    if (!isAuth) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
+    const user = await getUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    // Ensure user exists in database (create if first time)
+    const dbUser = await prisma.user.upsert({
+      where: { kindeId: user.id },
+      create: {
+        kindeId: user.id,
+        email: user.email || "",
+        name: user.given_name || user.family_name || undefined,
+        givenName: user.given_name || undefined,
+        familyName: user.family_name || undefined,
+        picture: user.picture || undefined,
+      },
+      update: {
+        email: user.email || "",
+        name: user.given_name || user.family_name || undefined,
+        givenName: user.given_name || undefined,
+        familyName: user.family_name || undefined,
+        picture: user.picture || undefined,
+      },
+    });
+
+    // Fetch only parcels owned by the authenticated user
     const parcels = await prisma.parcel.findMany({
+      where: { userId: dbUser.id },
       orderBy: { created_at: "desc" },
     });
 

@@ -2,6 +2,7 @@
 
 import LandingNavbar from "@/components/landing-navbar";
 import Footer from "@/components/footer";
+import PageFooter from "@/components/page-footer";
 
 function TopographicBackground() {
   return (
@@ -311,6 +312,7 @@ export default function LandingPage() {
         </section>
       </main>
       <Footer variant="landing" />
+      <PageFooter />
     </>
   );
 }
