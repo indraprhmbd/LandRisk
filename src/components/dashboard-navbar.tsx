@@ -8,6 +8,7 @@ import Link from "next/link";
 export default function DashboardNavbar({ refreshKey = 0 }: { refreshKey?: number }) {
   const { isAuthenticated, user, isLoading } = useKindeBrowserClient();
   const [showReportsDropdown, setShowReportsDropdown] = useState(false);
+  const [showMobileReports, setShowMobileReports] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -42,7 +43,7 @@ export default function DashboardNavbar({ refreshKey = 0 }: { refreshKey?: numbe
     };
 
     fetchReports();
-  }, [refreshKey]); // Refetch when refreshKey changes
+  }, [refreshKey]);
 
   if (isLoading) {
     return (
@@ -192,20 +193,23 @@ export default function DashboardNavbar({ refreshKey = 0 }: { refreshKey?: numbe
             {/* Reports Dropdown */}
             <div className="relative">
               <button
-                onClick={() => setShowReportsDropdown(!showReportsDropdown)}
+                onClick={() => setShowMobileReports(!showMobileReports)}
                 className="flex items-center justify-between w-full text-sm text-gray-300 hover:text-white py-2"
               >
                 <div className="flex items-center gap-3">
                   <span className="material-icons text-lg text-primary">description</span>
                   <span>Generated Reports</span>
                 </div>
-                <span className={`material-icons text-sm transition-transform ${showReportsDropdown ? 'rotate-180' : ''}`}>expand_more</span>
+                <span className={`material-icons text-sm transition-transform ${showMobileReports ? 'rotate-180' : ''}`}>expand_more</span>
               </button>
 
-              {showReportsDropdown && (
-                <div className="mt-2 ml-8 space-y-2 bg-surface-border-alt rounded-lg p-3 border border-surface-border">
+              {showMobileReports && (
+                <div className="mt-2 ml-8 space-y-2 bg-surface-border-alt rounded-lg p-3 border border-surface-border max-h-64 overflow-y-auto">
                   {loadingReports ? (
-                    <p className="text-xs text-gray-500">Loading...</p>
+                    <div className="flex items-center justify-center py-4">
+                      <span className="material-icons text-gray-500 animate-spin mr-2">refresh</span>
+                      <p className="text-xs text-gray-500">Loading...</p>
+                    </div>
                   ) : recentReports.length > 0 ? (
                     recentReports.map((report) => (
                       <Link
@@ -213,7 +217,7 @@ export default function DashboardNavbar({ refreshKey = 0 }: { refreshKey?: numbe
                         href={`/report/${report.id}`}
                         onClick={() => {
                           setIsMobileMenuOpen(false);
-                          setShowReportsDropdown(false);
+                          setShowMobileReports(false);
                         }}
                         className="block text-xs text-gray-400 hover:text-white py-2 cursor-pointer"
                       >
@@ -221,7 +225,10 @@ export default function DashboardNavbar({ refreshKey = 0 }: { refreshKey?: numbe
                       </Link>
                     ))
                   ) : (
-                    <p className="text-xs text-gray-500">No reports yet</p>
+                    <div className="text-center py-4">
+                      <span className="material-icons text-gray-500 text-2xl">inbox</span>
+                      <p className="text-xs text-gray-500 mt-2">No reports yet</p>
+                    </div>
                   )}
                 </div>
               )}
