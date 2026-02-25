@@ -98,7 +98,7 @@ export default function MapPage() {
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
-      <header className="bg-surface-dark border-b border-surface-border px-6 py-4">
+      <header className="bg-surface-dark border-b border-surface-border px-6 py-4 flex-shrink-0">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-serif font-medium text-off-white">
@@ -118,9 +118,9 @@ export default function MapPage() {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 grid lg:grid-cols-4">
+      <div className="flex-1 grid lg:grid-cols-4 min-h-0">
         {/* Map Area */}
-        <div className="lg:col-span-3 relative">
+        <div className="lg:col-span-3 relative h-[60vh] lg:h-auto">
           <MapView
             center={defaultCenter}
             zoom={5}
