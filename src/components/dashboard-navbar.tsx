@@ -177,7 +177,7 @@ export default function DashboardNavbar({ refreshKey = 0 }: { refreshKey?: numbe
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-t border-surface-border bg-surface-dark">
+        <div className="md:hidden border-t border-surface-border bg-surface-dark relative z-50">
           <div className="px-6 py-4 space-y-4">
             {/* Map Link */}
             <Link
@@ -190,7 +190,7 @@ export default function DashboardNavbar({ refreshKey = 0 }: { refreshKey?: numbe
             </Link>
 
             {/* Reports Dropdown */}
-            <div>
+            <div className="relative">
               <button
                 onClick={() => setShowReportsDropdown(!showReportsDropdown)}
                 className="flex items-center justify-between w-full text-sm text-gray-300 hover:text-white py-2"
@@ -203,21 +203,22 @@ export default function DashboardNavbar({ refreshKey = 0 }: { refreshKey?: numbe
               </button>
 
               {showReportsDropdown && (
-                <div className="mt-2 ml-8 space-y-2">
+                <div className="mt-2 ml-8 space-y-2 bg-surface-border-alt rounded-lg p-3 border border-surface-border">
                   {loadingReports ? (
                     <p className="text-xs text-gray-500">Loading...</p>
                   ) : recentReports.length > 0 ? (
                     recentReports.map((report) => (
-                      <button
+                      <Link
                         key={report.id}
+                        href={`/report/${report.id}`}
                         onClick={() => {
-                          window.location.href = `/dashboard?parcel=${report.id}`;
                           setIsMobileMenuOpen(false);
+                          setShowReportsDropdown(false);
                         }}
-                        className="block text-xs text-gray-400 hover:text-white py-1"
+                        className="block text-xs text-gray-400 hover:text-white py-2 cursor-pointer"
                       >
                         {report.name}
-                      </button>
+                      </Link>
                     ))
                   ) : (
                     <p className="text-xs text-gray-500">No reports yet</p>
